@@ -35,7 +35,20 @@ const Services = () => {
     },
   ];
   return (
-    <div>
+    <div className=" py-24">
+      <div className=" py-12">
+        <h2 className="text-3xl text-primary font-bold text-center mb-4">
+          Reliable & Nationwide Logistics Services
+        </h2>
+        <p className="text-center text-gray-600 max-w-3xl mx-auto mb-8">
+          Discover a complete range of fast, secure, and tailored delivery
+          solutions designed to meet both individual and corporate needs. From
+          express delivery to inventory management and reverse logistics, our
+          services ensure your business operates seamlessly across all regions
+          of Bangladesh.
+        </p>
+      </div>
+
       <ServicesCard services={services}></ServicesCard>
     </div>
   );
