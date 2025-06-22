@@ -23,7 +23,7 @@ const ClientLogosMarquee = () => {
             <img
               src={logo}
               alt={`Logo ${index + 1}`}
-              className="w-24 h-24 ml-30 object-contain grayscale hover:grayscale-0 transition duration-300"
+              className="w-24 h-24 ml-30 object-contain  hover:grayscale-0 transition duration-300"
             />
           </div>
         ))}
