@@ -1,9 +1,18 @@
 import React from "react";
 import location from "../../../assets/location-merchant.png"
+import bgImage from "../../../assets/be-a-merchant-bg.png"
 const BeMarchant = () => {
   return (
    <div className=" py-12">
-     <div className="card max-w-7xl mx-auto card-side p-20 flex-row-reverse bg-[#03373D] shadow-sm">
+     <div style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize:"100%",
+        backgroundPositionY:"top",
+        // backgroundSize: 'cover',
+        backgroundRepeat:"no-repeat",
+        backgroundPosition: 'center',
+      
+      }} className="card flex-col-reverse max-w-7xl mx-auto card-side md:p-20 md:flex-row-reverse bg-[#03373D] shadow-sm">
       <figure className="">
         <img className=" w-full"
           src={location}
