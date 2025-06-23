@@ -7,7 +7,7 @@ const BeMarchant = () => {
      <div style={{
         backgroundImage: `url(${bgImage})`,
         backgroundSize:"100%",
-        backgroundPositionY:"top",
+        // backgroundPositionY:"top",
         // backgroundSize: 'cover',
         backgroundRepeat:"no-repeat",
         backgroundPosition: 'center',
@@ -19,9 +19,9 @@ const BeMarchant = () => {
           alt="Movie"
         />
       </figure>
-      <div className="card-body w-3/4">
+      <div className="card-body w-3/4 text-white">
         <h2 className="card-title">Merchant and Customer Satisfaction is Our First Priority</h2>
-        <p>We offer the lowest delivery charge with the highest value along with 100% safety of your product. Pathao courier delivers your parcels in every corner of Bangladesh right on time.</p>
+        <p className=" text-center">We offer the lowest delivery charge with the highest value along with 100% safety of your product. Pathao courier delivers your parcels in every corner of Bangladesh right on time.</p>
         <div className="card-actions ">
           <button className="btn rounded-full btn-primary">Become a Merchant</button>
           <button className="btn rounded-full btn-primary btn-outline">Earn with Profast Courier</button>
