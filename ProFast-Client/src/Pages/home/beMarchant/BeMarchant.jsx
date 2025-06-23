@@ -7,10 +7,10 @@ const BeMarchant = () => {
      <div style={{
         backgroundImage: `url(${bgImage})`,
         backgroundSize:"100%",
-        // backgroundPositionY:"top",
+        backgroundPositionY:"top",
         // backgroundSize: 'cover',
         backgroundRepeat:"no-repeat",
-        backgroundPosition: 'center',
+        // backgroundPosition: 'center',
       
       }} className="card flex-col-reverse max-w-7xl mx-auto card-side md:p-20 md:flex-row-reverse bg-[#03373D] shadow-sm">
       <figure className="">

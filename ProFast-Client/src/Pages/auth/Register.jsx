@@ -1,10 +1,11 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-const Login = () => {
+
+const Register = () => {
   const {
     register,
-    formState: { errors },
     handleSubmit,
+    formState: { errors },
   } = useForm();
   const onsubmit = (data) => {
     console.log(data);
@@ -12,7 +13,7 @@ const Login = () => {
   return (
     <div className="card bg-base-100 mx-auto w-full max-w-sm shrink-0 shadow-2xl">
       <div className="card-body">
-        <h1 className="text-5xl font-bold">Login now!</h1>
+        <h1 className="text-5xl font-bold">Register now!</h1>
         <form onSubmit={handleSubmit(onsubmit)}>
           <fieldset className="fieldset">
             <label className="label">Email</label>
@@ -22,7 +23,7 @@ const Login = () => {
               className="input"
               placeholder="Email"
             />
-            {errors?.email && (
+             {errors?.email && (
               <span className=" text-error">{errors?.email?.message}</span>
             )}
 
@@ -54,4 +55,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
