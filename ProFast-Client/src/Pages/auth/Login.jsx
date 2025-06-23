@@ -1,13 +1,24 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import useAuth from "../../hooks/useAuth";
+import LoginWithGoogle from "./socialLogin/LoginWithGoogle";
+import { Link } from "react-router";
 const Login = () => {
+  const { signIn } = useAuth();
+  const [error, setError] = useState("");
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm();
   const onsubmit = (data) => {
-    console.log(data);
+    signIn(data.email, data.password)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        setError(error.code);
+      });
   };
   return (
     <div className="card bg-base-100 mx-auto w-full max-w-sm shrink-0 shadow-2xl">
@@ -47,6 +58,17 @@ const Login = () => {
               <a className="link link-hover">Forgot password?</a>
             </div>
             <button className="btn btn-neutral mt-4">Login</button>
+            {error && <span className=" text-error">{error}</span>}
+            <div className=" w-full text-center">
+              <LoginWithGoogle></LoginWithGoogle>
+            </div>
+            <p className=" text-lg my-4">
+              Already have a register ? please{" "}
+              <Link className=" text-primary" to={"/register"}>
+                {" "}
+                Register
+              </Link>
+            </p>
           </fieldset>
         </form>
       </div>

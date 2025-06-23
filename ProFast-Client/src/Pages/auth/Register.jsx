@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-
+import useAuth from "../../hooks/useAuth";
+import LoginWithGoogle from "./socialLogin/LoginWithGoogle";
+import { Link } from "react-router";
 const Register = () => {
+  const [error, setError] = useState("");
+  const { createUser } = useAuth();
   const {
     register,
     handleSubmit,
@@ -9,6 +13,13 @@ const Register = () => {
   } = useForm();
   const onsubmit = (data) => {
     console.log(data);
+    createUser(data.email, data.password)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        setError(error.code);
+      });
   };
   return (
     <div className="card bg-base-100 mx-auto w-full max-w-sm shrink-0 shadow-2xl">
@@ -23,7 +34,7 @@ const Register = () => {
               className="input"
               placeholder="Email"
             />
-             {errors?.email && (
+            {errors?.email && (
               <span className=" text-error">{errors?.email?.message}</span>
             )}
 
@@ -47,7 +58,18 @@ const Register = () => {
             <div>
               <a className="link link-hover">Forgot password?</a>
             </div>
-            <button className="btn btn-neutral mt-4">Login</button>
+            <button className="btn btn-neutral mt-4">Register</button>
+            {error && <span className=" text-error">{error}</span>}
+            <div>
+              <LoginWithGoogle></LoginWithGoogle>
+            </div>
+            <p className=" text-lg my-4">
+              Already have a register ? please{" "}
+              <Link className=" text-primary" to={"/login"}>
+                {" "}
+                singIn
+              </Link>
+            </p>
           </fieldset>
         </form>
       </div>
