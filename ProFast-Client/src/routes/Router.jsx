@@ -5,6 +5,8 @@ import AuthLayout from "../layouts/AuthLayout";
 import Login from "../Pages/auth/Login";
 import Register from "../Pages/auth/Register";
 import Coverage from "../Pages/coverage/Coverage";
+import PrivateRoute from "./PrivateRoute";
+import AddParcel from "../Pages/addParsel/AddParcel";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +21,15 @@ const router = createBrowserRouter([
         path: "/coverage",
         Component: Coverage,
         loader: () => fetch("/service-centre.json"),
+      },
+      {
+        path: "/add-parcel",
+        loader: () => fetch("/service-centre.json"),
+        element: (
+          <PrivateRoute>
+            <AddParcel></AddParcel>
+          </PrivateRoute>
+        ),
       },
     ],
   },
