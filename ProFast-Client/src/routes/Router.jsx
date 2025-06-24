@@ -4,6 +4,7 @@ import Home from "../Pages/home/home/Home";
 import AuthLayout from "../layouts/AuthLayout";
 import Login from "../Pages/auth/Login";
 import Register from "../Pages/auth/Register";
+import Coverage from "../Pages/coverage/Coverage";
 
 const router = createBrowserRouter([
   {
@@ -13,6 +14,11 @@ const router = createBrowserRouter([
       {
         index: true,
         Component: Home,
+      },
+      {
+        path: "/coverage",
+        Component: Coverage,
+        loader: () => fetch("/service-centre.json"),
       },
     ],
   },
@@ -25,9 +31,9 @@ const router = createBrowserRouter([
         Component: Login,
       },
       {
-        path:"/register",
-        Component:Register
-      }
+        path: "/register",
+        Component: Register,
+      },
     ],
   },
 ]);
