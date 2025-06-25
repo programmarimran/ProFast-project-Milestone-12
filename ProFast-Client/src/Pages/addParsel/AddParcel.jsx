@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useLoaderData } from "react-router";
-
+import calculateParcelCost from "../../utilities/calculateParcelCost";
+import Swal from "sweetalert2";
 const AddParcel = () => {
   const data = useLoaderData();
   const {
@@ -30,8 +31,55 @@ const AddParcel = () => {
     data.find((item) => item.district === receiverDistrict)?.covered_area || [];
 
   const onSubmit = (data) => {
-    alert("form subitted")
+    const { type, parcelWeight, receiverDistrict, senderDistrict } = data;
+    const calculationCost = calculateParcelCost(
+      type,
+      parcelWeight,
+      senderDistrict,
+      receiverDistrict
+    );
+   const { cost, breakdown }=calculationCost
+   console.log(breakdown)
+
+Swal.fire({
+  title: "Confirm Parcel Booking",
+  html: `
+    <div style="text-align: left;">
+      <h3><strong>Sender:</strong></h3>
+      <p><strong>Name:</strong> ${data.senderName}</p>
+      <p><strong>Region/District:</strong> ${data.senderRegion} / ${data.senderDistrict}</p>
+      <hr />
+      <h3><strong>Receiver:</strong></h3>
+      <p><strong>Name:</strong> ${data.receiverName}</p>
+      <p><strong>Region/District:</strong> ${data.receiverRegion} / ${data.receiverDistrict}</p>
+      <hr />
+      <h3><strong>Parcel:</strong></h3>
+      <p><strong>Name:</strong> ${data.parcelName}</p>
+      <p><strong>Weight:</strong> ${data.parcelWeight} KG (${data.type})</p>
+      <hr />
+      <p><strong>Cost Breakdown:</strong><br>${breakdown}</p>
+      <p><strong><u>Total Cost: ৳${cost}</u></strong></p>
+    </div>
+  `,
+  icon: "info",
+  showCancelButton: true,
+  confirmButtonText: "✅ Confirm Booking",
+  cancelButtonText: "✏️ Edit Info",
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#ffc107",
+}).then((result) => {
+  if (result.isConfirmed) {
+    data.parcelCost = cost;
     console.log("Parcel Data:", data);
+    Swal.fire({
+      title: "Success!",
+      text: "Your parcel has been added successfully.",
+      icon: "success",
+    });
+  } 
+});
+
+   
   };
 
   return (
@@ -252,7 +300,9 @@ const AddParcel = () => {
           * PickUp Time 4pm - 7pm Approx.
         </p>
 
-        <button type="submit" className="btn btn-success">Proceed to Confirm Booking</button>
+        <button type="submit" className="btn btn-success">
+          Proceed to Confirm Booking
+        </button>
       </form>
     </div>
   );
