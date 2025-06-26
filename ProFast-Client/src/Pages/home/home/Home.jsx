@@ -16,6 +16,8 @@ const Home = () => {
       <h1 className=" text-blue-500 dark:text-red-500 text-center text-2xl">
         This is home page
       </h1>
+      <button className=" btn btn-primary mx-auto flex justify-center items-center"> click me </button>
+      <h1 className=" text-primary text-center"> alsdfghfdgdaga</h1>
       <Services></Services>
       <ClientLogosMarquee></ClientLogosMarquee>
       <FeatureSection></FeatureSection>
