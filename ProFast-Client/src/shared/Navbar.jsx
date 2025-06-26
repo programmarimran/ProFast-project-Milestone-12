@@ -1,8 +1,9 @@
 import React from "react";
 import { NavLink } from "react-router";
 import ProFastLogo from "./proFastLogo/ProFastLogo";
-import ThemeToggle from "../components/ThemeToggle";
 import useAuth from "../hooks/useAuth";
+import NavToggle from "../components/theme/NavToggle";
+// import NavToggle from "../hooks/NavToggle";
 const Navbar = () => {
   const { logout } = useAuth();
   const links = (
@@ -55,7 +56,7 @@ const Navbar = () => {
         <ul className="menu menu-horizontal px-1">{links}</ul>
       </div>
       <div className="navbar-end">
-        <ThemeToggle></ThemeToggle>
+        <NavToggle></NavToggle>
         <button onClick={() => logout()} className="btn">
           Logout
         </button>

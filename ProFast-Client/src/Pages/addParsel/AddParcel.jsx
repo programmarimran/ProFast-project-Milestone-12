@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useLoaderData } from "react-router";
 import calculateParcelCost from "../../utilities/calculateParcelCost";
 import Swal from "sweetalert2";
+import generateParcelId from "../../utilities/generateParcelId";
 const AddParcel = () => {
   const data = useLoaderData();
   const {
@@ -38,12 +39,11 @@ const AddParcel = () => {
       senderDistrict,
       receiverDistrict
     );
-   const { cost, breakdown }=calculationCost
-   console.log(breakdown)
+    const { cost, breakdown } = calculationCost;
 
-Swal.fire({
-  title: "Confirm Parcel Booking",
-  html: `
+    Swal.fire({
+      title: "Confirm Parcel Booking",
+      html: `
     <div style="text-align: left;">
       <h3><strong>Sender:</strong></h3>
       <p><strong>Name:</strong> ${data.senderName}</p>
@@ -61,25 +61,27 @@ Swal.fire({
       <p><strong><u>Total Cost: ৳${cost}</u></strong></p>
     </div>
   `,
-  icon: "info",
-  showCancelButton: true,
-  confirmButtonText: "✅ Confirm Booking",
-  cancelButtonText: "✏️ Edit Info",
-  confirmButtonColor: "#3085d6",
-  cancelButtonColor: "#ffc107",
-}).then((result) => {
-  if (result.isConfirmed) {
-    data.parcelCost = cost;
-    console.log("Parcel Data:", data);
-    Swal.fire({
-      title: "Success!",
-      text: "Your parcel has been added successfully.",
-      icon: "success",
+      icon: "info",
+      showCancelButton: true,
+      confirmButtonText: "✅ Confirm Booking",
+      cancelButtonText: "✏️ Edit Info",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#ffc107",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const tracking_id = generateParcelId();
+        data.parcelId = tracking_id;
+        data.parcelCost = cost;
+        (data.deliveryStatus = "Pending"),
+          (data.paymentStatus = "Unpaid"),
+          console.log(data);
+        Swal.fire({
+          title: "Success!",
+          text: "Your parcel has been added successfully.",
+          icon: "success",
+        });
+      }
     });
-  } 
-});
-
-   
   };
 
   return (
