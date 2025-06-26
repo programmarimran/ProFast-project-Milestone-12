@@ -4,7 +4,9 @@ import { useLoaderData } from "react-router";
 import calculateParcelCost from "../../utilities/calculateParcelCost";
 import Swal from "sweetalert2";
 import generateParcelId from "../../utilities/generateParcelId";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 const AddParcel = () => {
+  const axiosSecure = useAxiosSecure();
   const data = useLoaderData();
   const {
     register,
@@ -74,7 +76,15 @@ const AddParcel = () => {
         data.parcelCost = cost;
         (data.deliveryStatus = "Pending"),
           (data.paymentStatus = "Unpaid"),
-          console.log(data);
+          axiosSecure
+            .post("/parcels", data)
+            .then((res) => {
+              console.log(res.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        console.log(data);
         Swal.fire({
           title: "Success!",
           text: "Your parcel has been added successfully.",

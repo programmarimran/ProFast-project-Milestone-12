@@ -19,19 +19,19 @@ const Bannar = () => {
   };
 
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full shadow-2xl overflow-hidden rounded-2xl">
       <Slider {...settings}>
         <div>
-          <img src={bannar1} alt="Banner 1" className="w-full object-cover" />
-          <p className="legend">Legend 1</p>
+          <img src={bannar1} alt="Banner 1" className="w-full h-[300px] md:h-[500px] object-cover rounded-2xl" />
+          
         </div>
         <div>
-          <img src={bannar2} alt="Banner 2" className="w-full object-cover" />
-          <p className="legend">Legend 2</p>
+          <img src={bannar2} alt="Banner 2" className="w-full h-[300px] md:h-[500px] object-cover rounded-2xl" />
+          
         </div>
         <div>
-          <img src={bannar3} alt="Banner 3" className="w-full object-cover" />
-          <p className="legend">Legend 3</p>
+          <img src={bannar3} alt="Banner 3" className="w-full h-[300px] md:h-[500px] object-cover rounded-2xl" />
+          
         </div>
       </Slider>
     </div>
