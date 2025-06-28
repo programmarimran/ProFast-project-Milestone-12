@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = process.env.DB_URI;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -48,10 +48,25 @@ app.get("/parcels", async (req, res) => {
   const result = await parcelCollection.find().toArray();
   res.send(result);
 });
+// ✅ GET parcels by senderEmail
+app.get("/parcels", async (req, res) => {
+  const email = req.query.email;
+  if (!email) {
+    return res.status(400).send({ error: "senderEmail query is required" });
+  }
+
+  const query = { senderEmail: email };
+  const result = await parcelCollection.find(query).toArray();
+  res.send(result);
+});
 app.get("/", (req, res) => {
   res.send("🚚 Parcel Monitoring Server is Running...");
 });
-
+app.delete("/parcels/:id", async (req, res) => {
+  const id = req.params.id;
+  const result = await parcelCollection.deleteOne({ _id: new ObjectId(id) });
+  res.send(result);
+});
 app.listen(PORT, () => {
   console.log(`✅ Server running at http://localhost:${PORT}`);
 });
