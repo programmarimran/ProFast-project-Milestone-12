@@ -5,7 +5,9 @@ import calculateParcelCost from "../../utilities/calculateParcelCost";
 import Swal from "sweetalert2";
 import generateParcelId from "../../utilities/generateParcelId";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useAuth from "../../hooks/useAuth";
 const AddParcel = () => {
+  const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const data = useLoaderData();
   const {
@@ -71,9 +73,11 @@ const AddParcel = () => {
       cancelButtonColor: "#ffc107",
     }).then((result) => {
       if (result.isConfirmed) {
-        const tracking_id = generateParcelId();
-        data.parcelId = tracking_id;
+        const { parcel_id, creation_date } = generateParcelId();
+        data.parcel_id = parcel_id;
+        data.creation_date = creation_date;
         data.parcelCost = cost;
+        data.senderEmail = user.email;
         (data.deliveryStatus = "Pending"),
           (data.paymentStatus = "Unpaid"),
           axiosSecure
@@ -138,7 +142,8 @@ const AddParcel = () => {
             type="number"
             placeholder="Parcel Weight (KG)"
             className="input input-bordered w-full"
-            {...register("parcelWeight", { required: true })}
+            {...register("parcelWeight")}
+            defaultValue={0}
           />
         </div>
 

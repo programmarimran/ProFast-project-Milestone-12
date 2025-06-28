@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import useAuth from "../../hooks/useAuth";
 import LoginWithGoogle from "./socialLogin/LoginWithGoogle";
-import { Link } from "react-router";
+import { Link,  useNavigate } from "react-router";
 const Login = () => {
+ 
+  const navigate=useNavigate()
   const { signIn } = useAuth();
   const [error, setError] = useState("");
   const {
@@ -15,6 +17,7 @@ const Login = () => {
     signIn(data.email, data.password)
       .then((result) => {
         console.log(result);
+navigate("/")
       })
       .catch((error) => {
         setError(error.code);
