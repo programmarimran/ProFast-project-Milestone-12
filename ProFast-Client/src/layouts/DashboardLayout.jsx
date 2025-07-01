@@ -58,11 +58,15 @@ const DashboardLayout = () => {
 
           {/* User Info */}
           <li className="flex items-center gap-3 px-2 py-2 border rounded-md bg-white dark:bg-neutral text-gray-800 dark:text-white shadow-sm">
-            <img
+        
+         <div className=" rounded-full">
+           <img
               src={user.photoURL}
               alt="User"
-              className="h-10 w-10 rounded-full border"
+              className=" w-24 h-24 rounded-full border"
             />
+         </div>
+          
             <div className=" flex flex-col">
               <h1 className="font-semibold text-sm">{user.email}</h1>
               <NavLink

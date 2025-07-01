@@ -77,18 +77,23 @@ const AddParcel = () => {
         const { parcel_id, creation_date } = generateParcelId();
         data.parcel_id = parcel_id;
         data.creation_date = creation_date;
+        // ***********************
+        data.estimatedDelivery = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+
+        // *************************
         data.parcelCost = cost;
         data.senderEmail = user.email;
         (data.deliveryStatus = "Pending"),
           (data.paymentStatus = "Unpaid"),
-          axiosSecure
-            .post("/parcels", data)
-            .then((res) => {
-              console.log(res.data);
-            })
-            .catch((error) => {
-              console.log(error);
-            });
+          (data.updated_at = creation_date);
+        axiosSecure
+          .post("/parcels", data)
+          .then((res) => {
+            console.log(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
         console.log(data);
         Swal.fire({
           title: "Success!",

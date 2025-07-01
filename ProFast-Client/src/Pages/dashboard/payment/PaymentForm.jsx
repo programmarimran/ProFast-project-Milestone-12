@@ -6,6 +6,7 @@ import useAuth from "../../../hooks/useAuth";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 const PaymentForm = ({ parcelId }) => {
+  const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
@@ -36,7 +37,7 @@ const PaymentForm = ({ parcelId }) => {
       return;
     }
     // **************
-
+    setIsProcessing(true);
     const card = elements.getElement(CardElement);
     if (card === null) {
       return;
@@ -72,17 +73,17 @@ const PaymentForm = ({ parcelId }) => {
     });
 
     console.log("result in the client", result);
-   
+
     if (result.error) {
       setError(result.error.message);
+      setIsProcessing(false);
     } else {
       setError("");
 
       if (result.paymentIntent.status === "succeeded") {
-
-        const transactionId=result.paymentIntent.id;
-        console.log("transaction id",transactionId)
- console.log("this is payment",result.paymentIntent.id)
+        const transactionId = result.paymentIntent.id;
+        console.log("transaction id", transactionId);
+        console.log("this is payment", result.paymentIntent.id);
         const paymentData = {
           paymentIntentId: transactionId,
           parcelId,
@@ -124,11 +125,11 @@ const PaymentForm = ({ parcelId }) => {
         className=" space-y-4 bg-white p-6 rounded-xl shadow-md  w-full max-w-md mx-auto"
       >
         <CardElement className=" p-2 border rounded "></CardElement>
-        <button 
-          className=" btn btn-primary bg-green-500 border-none mx-auto flex justify-center  text-center"
-          disabled={!stripe}
+        <button
+          className="btn btn-primary bg-green-500 border-none mx-auto flex justify-center text-center"
+          disabled={!stripe || isProcessing}
         >
-          Pay ${data?.parcelCost}
+          {isProcessing ? "Processing..." : `Pay $${data?.parcelCost}`}
         </button>
         {error && <p className=" text-error">{error}</p>}
       </form>
