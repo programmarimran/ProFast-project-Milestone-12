@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useNavigate } from "react-router";
 import calculateParcelCost from "../../utilities/calculateParcelCost";
 import Swal from "sweetalert2";
 import generateParcelId from "../../utilities/generateParcelId";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 const AddParcel = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const data = useLoaderData();
@@ -94,6 +95,8 @@ const AddParcel = () => {
           text: "Your parcel has been added successfully.",
           icon: "success",
         });
+
+        navigate("/dashboard/myparcels");
       }
     });
   };

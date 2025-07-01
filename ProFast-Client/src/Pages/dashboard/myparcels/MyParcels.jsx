@@ -3,6 +3,7 @@ import { FaEye, FaTrash, FaPen } from "react-icons/fa";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import { Link } from "react-router";
 
 const MyParcels = () => {
   const { user } = useAuth();
@@ -11,7 +12,7 @@ const MyParcels = () => {
   const { data: parcels = [], refetch } = useQuery({
     queryKey: ["myParcels", user.email],
     queryFn: async () => {
-      const parcels = await axiosSecure.get(`/parcels?email=${user.email}`);
+      const parcels = await axiosSecure.get(`/myparcels?email=${user.email}`);
       return parcels;
     },
   });
@@ -30,7 +31,7 @@ const MyParcels = () => {
     });
 
   const handleDelete = (id) => {
-    console.log(id)
+    console.log(id);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -50,7 +51,7 @@ const MyParcels = () => {
         });
       }
     });
-  };
+  }; //table-zebra css class aita dara row alada alada hoi
   return (
     <div className="overflow-x-auto">
       <table className="table table-zebra w-full">
@@ -100,12 +101,21 @@ const MyParcels = () => {
                   <FaEye />
                 </button>
 
-                <button
-                  //   onClick={() => console.log("edit", p)}
-                  className="btn btn-sm btn-warning text-white dark:bg-yellow-600"
-                >
-                  <FaPen />
-                </button>
+                {p.paymentStatus !== "paid" ? (
+                  <Link to={`/dashboard/payment/${p._id}`}>
+                    <button className="btn btn-sm btn-warning text-white dark:bg-yellow-600">
+                      Pay
+                    </button>
+                  </Link>
+                ) : (
+                  <button
+                    disabled
+                    className="btn btn-sm bg-gray-400 text-white opacity-60 cursor-not-allowed"
+                    style={{ pointerEvents: "auto" }} // Optional fallback
+                  >
+                    Paid
+                  </button>
+                )}
 
                 <button
                   onClick={() => handleDelete(p._id)}
