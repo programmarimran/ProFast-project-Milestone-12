@@ -12,6 +12,9 @@ import MyParcels from "../Pages/dashboard/myparcels/MyParcels";
 import Payment from "../Pages/dashboard/payment/Payment";
 import PaymentHistory from "../Pages/dashboard/paymentHistory/PaymentHistory";
 import TrackerPage from "../Pages/dashboard/tracker/TrackerPage";
+import BeARider from "../Pages/dashboard/beARIder/BeARider";
+import ActiveRiders from "../Pages/dashboard/activeRiders/ActiveRiders";
+import PendingRiders from "../Pages/dashboard/pendingRiders/PendingRiders";
 
 const router = createBrowserRouter([
   {
@@ -69,13 +72,26 @@ const router = createBrowserRouter([
         Component: Payment,
       },
       {
-        path:"history",
-        Component:PaymentHistory
+        path: "history",
+        Component: PaymentHistory,
       },
       {
-        path:"tracker",
-        Component:TrackerPage
-      }
+        path: "tracker",
+        Component: TrackerPage,
+      },
+      {
+        path: "be-a-rider",
+        loader: () => fetch("/service-centre.json"),
+        Component: BeARider,
+      },
+      {
+        path: "/dashboard/active-riders",
+        Component: ActiveRiders,
+      },
+      {
+        path: "/dashboard/pending-riders",
+        Component: PendingRiders,
+      },
     ],
   },
 ]);

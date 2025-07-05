@@ -9,6 +9,8 @@ import { NavLink, Outlet } from "react-router";
 import ProFastLogo from "../shared/proFastLogo/ProFastLogo";
 import useAuth from "../hooks/useAuth";
 import NavToggle from "../components/theme/NavToggle";
+import { FaUserClock, FaUsers } from "react-icons/fa";
+import {  FaPersonBiking } from "react-icons/fa6";
 
 const DashboardLayout = () => {
   const { user } = useAuth();
@@ -123,6 +125,38 @@ const DashboardLayout = () => {
               <MdDashboard /> Track Package
             </NavLink>
           </li>
+          <li>
+  <NavLink
+    to="/dashboard/be-a-rider"
+    className={({ isActive }) =>
+      `${navLinkClasses} ${isActive ? activeClass : ""}`
+    }
+  >
+    <FaPersonBiking /> Be A Rider
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/dashboard/active-riders"
+    className={({ isActive }) =>
+      `${navLinkClasses} ${isActive ? activeClass : ""}`
+    }
+  >
+    <FaUsers /> Active Riders
+  </NavLink>
+</li>
+
+<li>
+  <NavLink
+    to="/dashboard/pending-riders"
+    className={({ isActive }) =>
+      `${navLinkClasses} ${isActive ? activeClass : ""}`
+    }
+  >
+    <FaUserClock /> Pending Riders
+  </NavLink>
+</li>
         </ul>
       </div>
     </div>

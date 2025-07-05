@@ -3,6 +3,7 @@ import "./index.css";
 import { StrictMode } from "react";
 import { RouterProvider } from "react-router";
 import router from "./routes/Router";
+ import { ToastContainer } from 'react-toastify';
 import "aos/dist/aos.css";
 import Aos from "aos";
 import AuthProvider from "./contexts/auth/AuthProvider";
@@ -11,6 +12,7 @@ Aos.init();
 const queryClient = new QueryClient();
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+    <ToastContainer />
     <div className=" font-urbanist">
       <AuthProvider>
         <QueryClientProvider client={queryClient}>

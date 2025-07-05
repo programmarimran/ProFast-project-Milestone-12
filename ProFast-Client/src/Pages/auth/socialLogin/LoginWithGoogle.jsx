@@ -1,16 +1,27 @@
 import React, { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import { useNavigate } from "react-router";
+import useAxiosInstance from "../../../hooks/useAxiosInstance";
 
 const LoginWithGoogle = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
+  const axiosinstance = useAxiosInstance();
   const [error, setError] = useState("");
   const { signInWithGoogle } = useAuth();
   const handleGoogleLogin = () => {
     signInWithGoogle()
       .then((result) => {
-        console.log(result);
-        navigate("/")
+        // data save mongodb
+        const user = {
+          email: result.user.email,
+          role: "user",
+          created_at: new Date().toISOString(),
+          last_log_in: new Date().toISOString(),
+        };
+        axiosinstance.post(`/users`, user).then((res) => {
+          console.log(res.data);
+        });
+        navigate("/");
       })
       .catch((error) => {
         setError(error);
