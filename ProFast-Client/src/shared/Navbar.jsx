@@ -3,8 +3,13 @@ import { Link, NavLink } from "react-router";
 import ProFastLogo from "./proFastLogo/ProFastLogo";
 import useAuth from "../hooks/useAuth";
 import NavToggle from "../components/theme/NavToggle";
+import { FaPersonBiking } from "react-icons/fa6";
 // import NavToggle from "../hooks/NavToggle";
 const Navbar = () => {
+    const navLinkClasses =
+    "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:bg-purple-200 dark:hover:bg-purple-800";
+
+  const activeClass = "bg-purple-300 dark:bg-purple-700";
   const { logout, user } = useAuth();
   const links = (
     <>
@@ -19,6 +24,16 @@ const Navbar = () => {
       </li>
       <li>
         <NavLink>About us</NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/dashboard/be-a-rider"
+          className={({ isActive }) =>
+            `${navLinkClasses} ${isActive ? activeClass : ""}`
+          }
+        >
+          <FaPersonBiking /> Be A Rider
+        </NavLink>
       </li>
       {user && (
         <li>

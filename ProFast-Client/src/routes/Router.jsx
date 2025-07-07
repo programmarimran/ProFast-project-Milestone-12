@@ -15,12 +15,19 @@ import TrackerPage from "../Pages/dashboard/tracker/TrackerPage";
 import BeARider from "../Pages/dashboard/beARIder/BeARider";
 import ActiveRiders from "../Pages/dashboard/activeRiders/ActiveRiders";
 import PendingRiders from "../Pages/dashboard/pendingRiders/PendingRiders";
+import MakeAdmin from "../Pages/dashboard/makeAdmin/MakeAdmin";
+import Forbidden from "../Pages/forbiddenPage/Forbidden";
+import AdminRoute from "./AdminRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout></RootLayout>,
     children: [
+      {
+        path: "/forbidden",
+        Component: Forbidden,
+      },
       {
         index: true,
         Component: Home,
@@ -85,12 +92,29 @@ const router = createBrowserRouter([
         Component: BeARider,
       },
       {
-        path: "/dashboard/active-riders",
-        Component: ActiveRiders,
+        path: "active-riders",
+        element: (
+          <AdminRoute>
+            <ActiveRiders></ActiveRiders>
+          </AdminRoute>
+        ),
       },
       {
-        path: "/dashboard/pending-riders",
-        Component: PendingRiders,
+        path: "pending-riders",
+        element: (
+          <AdminRoute>
+            <PendingRiders></PendingRiders>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "make-admin",
+
+        element: (
+          <AdminRoute>
+            <MakeAdmin></MakeAdmin>
+          </AdminRoute>
+        ),
       },
     ],
   },

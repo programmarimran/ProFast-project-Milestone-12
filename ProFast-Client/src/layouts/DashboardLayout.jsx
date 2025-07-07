@@ -10,10 +10,12 @@ import ProFastLogo from "../shared/proFastLogo/ProFastLogo";
 import useAuth from "../hooks/useAuth";
 import NavToggle from "../components/theme/NavToggle";
 import { FaUserClock, FaUsers } from "react-icons/fa";
-import {  FaPersonBiking } from "react-icons/fa6";
+import { FaPersonBiking } from "react-icons/fa6";
+import useUserRole from "../hooks/useUserRole";
 
 const DashboardLayout = () => {
   const { user } = useAuth();
+  const { role } = useUserRole();
   console.log(user);
   const navLinkClasses =
     "flex items-center gap-2 px-4 py-2 rounded-md font-medium transition-all duration-200 hover:bg-purple-200 dark:hover:bg-purple-800";
@@ -55,20 +57,20 @@ const DashboardLayout = () => {
         <label htmlFor="my-drawer-2" className="drawer-overlay"></label>
         <ul className="menu w-80 h-full bg-base-200 dark:bg-base-100 text-base-content dark:text-white p-4 space-y-2">
           <div className=" flex gap-2 items-center justify-around">
-            <ProFastLogo /><NavToggle/>
+            <ProFastLogo />
+            <NavToggle />
           </div>
 
           {/* User Info */}
           <li className="flex items-center gap-3 px-2 py-2 border rounded-md bg-white dark:bg-neutral text-gray-800 dark:text-white shadow-sm">
-        
-         <div className=" rounded-full">
-           <img
-              src={user.photoURL}
-              alt="User"
-              className=" w-24 h-24 rounded-full border"
-            />
-         </div>
-          
+            <div className=" rounded-full">
+              <img
+                src={user.photoURL}
+                alt="User"
+                className=" w-24 h-24 rounded-full border"
+              />
+            </div>
+
             <div className=" flex flex-col">
               <h1 className="font-semibold text-sm">{user.email}</h1>
               <NavLink
@@ -126,37 +128,52 @@ const DashboardLayout = () => {
             </NavLink>
           </li>
           <li>
-  <NavLink
-    to="/dashboard/be-a-rider"
-    className={({ isActive }) =>
-      `${navLinkClasses} ${isActive ? activeClass : ""}`
-    }
-  >
-    <FaPersonBiking /> Be A Rider
-  </NavLink>
-</li>
+            <NavLink
+              to="/dashboard/be-a-rider"
+              className={({ isActive }) =>
+                `${navLinkClasses} ${isActive ? activeClass : ""}`
+              }
+            >
+              <FaPersonBiking /> Be A Rider
+            </NavLink>
+          </li>
 
-<li>
-  <NavLink
-    to="/dashboard/active-riders"
-    className={({ isActive }) =>
-      `${navLinkClasses} ${isActive ? activeClass : ""}`
-    }
-  >
-    <FaUsers /> Active Riders
-  </NavLink>
-</li>
+          {role && role === "admin" && (
+            <>
+              <li>
+                <NavLink
+                  to="/dashboard/active-riders"
+                  className={({ isActive }) =>
+                    `${navLinkClasses} ${isActive ? activeClass : ""}`
+                  }
+                >
+                  <FaUsers /> Active Riders
+                </NavLink>
+              </li>
 
-<li>
-  <NavLink
-    to="/dashboard/pending-riders"
-    className={({ isActive }) =>
-      `${navLinkClasses} ${isActive ? activeClass : ""}`
-    }
-  >
-    <FaUserClock /> Pending Riders
-  </NavLink>
-</li>
+              <li>
+                <NavLink
+                  to="/dashboard/pending-riders"
+                  className={({ isActive }) =>
+                    `${navLinkClasses} ${isActive ? activeClass : ""}`
+                  }
+                >
+                  <FaUserClock /> Pending Riders
+                </NavLink>
+              </li>
+
+              <li>
+                <NavLink
+                  to="/dashboard/make-admin"
+                  className={({ isActive }) =>
+                    `${navLinkClasses} ${isActive ? activeClass : ""}`
+                  }
+                >
+                  MakeAdmin
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </div>
