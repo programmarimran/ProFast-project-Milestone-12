@@ -40,13 +40,12 @@ const tokenFbVerify = async (req, res, next) => {
 //admin verify
 const tokenAdmin = async (req, res, next) => {
   const email = req?.decoded?.email;
-  console.log(email)
-  
+
   const user = await usersCollection.findOne({ email: email });
   if(!user){
     return res.status(401).send({message:"unauthorize access 2"})
   }
-  if(user && user.role !=="admin"){
+  if( user?.role !=="admin"){
      return res.status(403).send({ message: "Forbidden - Not admin" });
   }
   next();
