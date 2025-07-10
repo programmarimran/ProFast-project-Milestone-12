@@ -34,7 +34,7 @@ const tokenFbVerify = async (req, res, next) => {
     req.decoded = decodedToken;
     next();
   } catch (error) {
-    return res.status(403).json({ message: "Forbidden Access" });
+    return res.status(403).json({ message: "Forbidden Access 1" });
   }
 };
 //admin verify
@@ -42,11 +42,24 @@ const tokenAdmin = async (req, res, next) => {
   const email = req?.decoded?.email;
 
   const user = await usersCollection.findOne({ email: email });
-  if(!user){
-    return res.status(401).send({message:"unauthorize access 2"})
+  if (!user) {
+    return res.status(401).send({ message: "unauthorize access 2" });
   }
-  if( user?.role !=="admin"){
-     return res.status(403).send({ message: "Forbidden - Not admin" });
+  if (user?.role !== "admin") {
+    return res.status(403).send({ message: "Forbidden - Not admin" });
+  }
+  next();
+};
+//Rider verify
+const tokenRider = async (req, res, next) => {
+  const email = req?.decoded?.email;
+
+  const user = await usersCollection.findOne({ email: email });
+  if (!user) {
+    return res.status(401).send({ message: "unauthorize access 2" });
+  }
+  if (user?.role !== "rider") {
+    return res.status(403).send({ message: "Forbidden - Not Rider" });
   }
   next();
 };
@@ -64,6 +77,7 @@ let parcelCollection = null;
 let paymentCollection = null;
 let usersCollection = null;
 let riderCollection = null;
+let cashoutCollection = null;
 async function run() {
   try {
     // Connect to the "sample_mflix" database and access its "movies" collection
@@ -72,6 +86,7 @@ async function run() {
     paymentCollection = database.collection("payments");
     usersCollection = database.collection("users");
     riderCollection = database.collection("riders");
+    cashoutCollection = database.collection("cashouts");
 
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
@@ -118,12 +133,14 @@ app.post("/parcels", async (req, res) => {
   const result = await parcelCollection.insertOne(data);
   res.send(result);
 });
-app.get("/parcels", async (req, res) => {
-  const result = await parcelCollection.find().toArray();
+app.get("/track-parcels", async (req, res) => {
+  const email = req.query.email;
+  const filter = { senderEmail: email };
+  const result = await parcelCollection.find(filter).toArray();
   res.send(result);
 });
 // ✅ GET parcels by senderEmail
-app.get("/myparcels", tokenFbVerify, tokenAdmin, async (req, res) => {
+app.get("/myparcels", tokenFbVerify, async (req, res) => {
   const email = req.query.email;
   if (!email) {
     return res.status(400).send({ error: "senderEmail query is required" });
@@ -146,6 +163,172 @@ app.delete("/parcels/:id", async (req, res) => {
   const result = await parcelCollection.deleteOne({ _id: new ObjectId(id) });
   res.send(result);
 });
+// *****************parcel assign related api************************
+app.get("/parcels", tokenFbVerify, tokenAdmin, async (req, res) => {
+  const { deliveryStatus } = req.query;
+  console.log(deliveryStatus);
+  const filter = deliveryStatus ? { deliveryStatus: deliveryStatus } : {};
+  const parcels = await parcelCollection.find(filter).toArray();
+  res.send(parcels);
+});
+
+app.get("/riders/available", tokenFbVerify, tokenAdmin, async (req, res) => {
+  const { upozila } = req.query;
+  if (!upozila) return res.status(400).send({ error: "Area is required" });
+
+  const riders = await riderCollection
+    .find({ status: "active", upozila: upozila })
+    .project({
+      riderName: 1,
+      email: 1,
+    })
+    .toArray();
+
+  res.send(riders);
+});
+
+app.patch(
+  "/parcels/:id/assign-rider",
+  tokenFbVerify,
+  tokenAdmin,
+  async (req, res) => {
+    const { id } = req.params;
+    const { riderEmail, riderName } = req.body;
+    console.log(riderEmail, riderName);
+    const result = await parcelCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          assignedRider: { name: riderName, email: riderEmail },
+          deliveryStatus: "assigned",
+        },
+      }
+    );
+
+    res.send(result);
+  }
+);
+// *****************pendingDelevery related api*****************************
+app.get(
+  "/pending-deliveries-parcels",
+  tokenFbVerify,
+  tokenRider,
+  async (req, res) => {
+    const { deliveryStatus } = req.query;
+    console.log(deliveryStatus);
+    const filter = deliveryStatus ? { deliveryStatus: deliveryStatus } : {};
+    const parcels = await parcelCollection.find(filter).toArray();
+    res.send(parcels);
+  }
+);
+// PATCH: /parcels/:id/update-status
+app.patch("/parcels/:id/update-status-and-earning", async (req, res) => {
+  const { status, parcelCost } = req.body;
+  const { id } = req.params;
+
+  const parcel = await parcelCollection.findOne({ _id: new ObjectId(id) });
+  if (!parcel) return res.status(404).send({ error: "Parcel not found" });
+
+  const updateDoc = {
+    deliveryStatus: status,
+    updated_at: new Date(),
+  };
+
+  // ✅ যদি স্ট্যাটাস "delivered" হয়, তাহলে earningAmount বসাও
+  if (status === "delivered") {
+    const cost = parseFloat(parcel.parcelCost || parcelCost || 0);
+    const isSameDistrict = parcel.senderDistrict === parcel.receiverDistrict;
+    const earning = isSameDistrict ? cost * 0.1 : cost * 0.15;
+
+    updateDoc.earningInfo = {
+      amount: parseFloat(earning.toFixed(2)),
+      isCashedOut: false,
+    };
+  }
+
+  const result = await parcelCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: updateDoc }
+  );
+
+  res.send({
+    message: `✅ Parcel status updated to ${status}${
+      status === "delivered" ? " and earning calculated" : ""
+    }`,
+    result,
+  });
+});
+
+// **********************complited delreveries parcel**************************
+app.get(
+  "/complited-deliveries-parcels",
+  tokenFbVerify,
+  tokenRider,
+  async (req, res) => {
+    const { deliveryStatus } = req.query;
+    console.log(deliveryStatus);
+    const filter = deliveryStatus ? { deliveryStatus: deliveryStatus } : {};
+    const parcels = await parcelCollection.find(filter).toArray();
+    res.send(parcels);
+  }
+);
+app.patch(
+  "/parcel/:id/cashout",
+  tokenFbVerify,
+  tokenRider,
+  async (req, res) => {
+    const { id } = req.params;
+
+    const parcel = await parcelCollection.findOne({
+      _id: new ObjectId(id),
+      deliveryStatus: "delivered",
+      "earningInfo.isCashedOut": { $ne: true },
+    });
+
+    if (!parcel) {
+      return res
+        .status(404)
+        .send({ error: "Parcel not eligible for cashout." });
+    }
+
+    const now = new Date();
+    const batchId = `SINGLE-CASH-${now.getTime()}`;
+    const earning = parcel?.earningInfo?.amount || 0;
+
+    // ✅ Step 1: Update parcel document
+    await parcelCollection.updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          "earningInfo.isCashedOut": true,
+          "earningInfo.cashoutAt": now,
+          "earningInfo.cashoutBatchId": batchId,
+        },
+      }
+    );
+
+    // ✅ Step 2: Save to cashouts collection
+    const cashoutData = {
+      parcelId: parcel._id,
+      parcelCode: parcel.parcel_id,
+      riderEmail: parcel.assignedRider.email,
+      riderName: parcel.assignedRider.name || "N/A",
+      amount: earning,
+      status: "completed",
+      cashedAt: now,
+      batchId,
+    };
+
+    const result = await cashoutCollection.insertOne(cashoutData);
+
+    res.send({
+      message: "✅ Single parcel cashed out",
+      insertedId: result.insertedId,
+      cashoutInfo: cashoutData,
+    });
+  }
+);
+
 //*********************************************************************** */
 // created payment intregration system related api
 // ✅ GET /payments/user?email=imran@gmail.com
@@ -262,28 +445,33 @@ app.post("/rider", async (req, res) => {
   res.send(result);
 });
 // GET /riders/pending
-app.get("/riders/pending",tokenFbVerify, tokenAdmin, async (req, res) => {
+app.get("/riders/pending", tokenFbVerify, tokenAdmin, async (req, res) => {
   const pending = await riderCollection.find({ status: "pending" }).toArray();
   res.send(pending);
 });
 //get /riders/active
-app.get("/riders/active",tokenFbVerify,tokenAdmin, async (req, res) => {
+app.get("/riders/active", tokenFbVerify, tokenAdmin, async (req, res) => {
   const activeRiders = await riderCollection
     .find({ status: "active" })
     .toArray();
   res.send(activeRiders);
 });
 // PATCH /riders/approve/:id
-app.patch("/riders/approve/:id", async (req, res) => {
-  const id = req.params.id;
-  const { email } = req.body;
-  const result = await riderCollection.updateOne(
-    { _id: new ObjectId(id) },
-    { $set: { status: "active" } }
-  );
-  usersCollection.updateOne({ email: email }, { $set: { role: "rider" } });
-  res.send(result);
-});
+app.patch(
+  "/riders/approve/:id",
+  tokenFbVerify,
+  tokenAdmin,
+  async (req, res) => {
+    const id = req.params.id;
+    const result = await riderCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { status: "active" } }
+    );
+    const { email } = await riderCollection.findOne({ _id: new ObjectId(id) });
+    usersCollection.updateOne({ email: email }, { $set: { role: "rider" } });
+    res.send(result);
+  }
+);
 
 // Deactived /riders/:id
 app.patch("/riders/deactivate/:id", async (req, res) => {
