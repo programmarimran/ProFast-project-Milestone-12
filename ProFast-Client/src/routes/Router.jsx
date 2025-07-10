@@ -18,6 +18,10 @@ import PendingRiders from "../Pages/dashboard/pendingRiders/PendingRiders";
 import MakeAdmin from "../Pages/dashboard/makeAdmin/MakeAdmin";
 import Forbidden from "../Pages/forbiddenPage/Forbidden";
 import AdminRoute from "./AdminRoute";
+import AssignParcels from "../Pages/dashboard/assignParcel/AssignParcels";
+import PendingDeliveries from "../Pages/dashboard/pendingDeliveries/PendingDeliveries";
+import RiderRoute from "./RiderRoute";
+import CompletedDeliveries from "../Pages/dashboard/completedDeliveries/CompletedDeliveries";
 
 const router = createBrowserRouter([
   {
@@ -90,6 +94,30 @@ const router = createBrowserRouter([
         path: "be-a-rider",
         loader: () => fetch("/service-centre.json"),
         Component: BeARider,
+      },
+      {
+        path: "pending-deliveries",
+        element: (
+          <RiderRoute>
+            <PendingDeliveries></PendingDeliveries>
+          </RiderRoute>
+        ),
+      },
+      {
+        path: "completed-deliveries",
+        element: (
+          <RiderRoute>
+            <CompletedDeliveries></CompletedDeliveries>
+          </RiderRoute>
+        ),
+      },
+      {
+        path: "assign-parcels",
+        element: (
+          <AdminRoute>
+            <AssignParcels></AssignParcels>
+          </AdminRoute>
+        ),
       },
       {
         path: "active-riders",

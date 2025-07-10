@@ -4,6 +4,7 @@ import {
   MdLocalShipping,
   MdEdit,
   MdDashboard,
+  MdDoneAll,
 } from "react-icons/md";
 import { NavLink, Outlet } from "react-router";
 import ProFastLogo from "../shared/proFastLogo/ProFastLogo";
@@ -23,7 +24,7 @@ const DashboardLayout = () => {
   const activeClass = "bg-purple-300 dark:bg-purple-700";
 
   return (
-    <div className="drawer lg:drawer-open bg-gradient-to-bl from-[#8742bc10] to-[#36174b10] dark:from-[#8742bc20] dark:to-[#36174b30]">
+    <div className="drawer h-screen  lg:drawer-open bg-gradient-to-bl from-[#8742bc10] to-[#36174b10] dark:from-[#8742bc20] dark:to-[#36174b30]">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col">
         {/* Top Navbar for Mobile */}
@@ -53,14 +54,13 @@ const DashboardLayout = () => {
       </div>
 
       {/* Sidebar */}
-      <div className="drawer-side z-40">
+      <div className="drawer-side  bg-base-200 dark:bg-base-100  h-screen  z-40">
         <label htmlFor="my-drawer-2" className="drawer-overlay"></label>
-        <ul className="menu w-80 h-full bg-base-200 dark:bg-base-100 text-base-content dark:text-white p-4 space-y-2">
-          <div className=" flex gap-2 items-center justify-around">
-            <ProFastLogo />
-            <NavToggle />
-          </div>
-
+        <div className=" flex h-[200px] gap-2 items-center justify-around">
+          <ProFastLogo />
+          <NavToggle />
+        </div>
+        <ul className="menu  max-h-screen w-80  overflow-x-hidden overflow-y-auto  text-base-content dark:text-white p-4 space-y-2">
           {/* User Info */}
           <li className="flex items-center gap-3 px-2 py-2 border rounded-md bg-white dark:bg-neutral text-gray-800 dark:text-white shadow-sm">
             <div className=" rounded-full">
@@ -142,6 +142,16 @@ const DashboardLayout = () => {
             <>
               <li>
                 <NavLink
+                  to="/dashboard/assign-parcels"
+                  className={({ isActive }) =>
+                    `${navLinkClasses} ${isActive ? activeClass : ""}`
+                  }
+                >
+                  <FaUsers /> Assign Parcels
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
                   to="/dashboard/active-riders"
                   className={({ isActive }) =>
                     `${navLinkClasses} ${isActive ? activeClass : ""}`
@@ -170,6 +180,32 @@ const DashboardLayout = () => {
                   }
                 >
                   MakeAdmin
+                </NavLink>
+              </li>
+            </>
+          )}
+
+          {role && role === "rider" && (
+            <>
+              <li>
+                <NavLink
+                  to="/dashboard/pending-deliveries"
+                  className={({ isActive }) =>
+                    `${navLinkClasses} ${isActive ? activeClass : ""}`
+                  }
+                >
+                  PendingDeliveries
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/dashboard/completed-deliveries"
+                  className={({ isActive }) =>
+                    isActive ? "text-green-600 font-semibold" : "text-gray-600"
+                  }
+                >
+                  <MdDoneAll className="inline-block mr-1" />
+                  Completed Deliveries
                 </NavLink>
               </li>
             </>

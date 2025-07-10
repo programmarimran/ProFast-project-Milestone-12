@@ -3,8 +3,10 @@ import { useForm } from "react-hook-form";
 import { useLoaderData } from "react-router";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import useAuth from "../../../hooks/useAuth";
 
 const BeARider = () => {
+  const {user}=useAuth()
   const axiosSecure = useAxiosSecure();
   const coverageArea = useLoaderData();
   const {
@@ -53,17 +55,18 @@ const BeARider = () => {
           <input
             {...register("riderName", { required: true })}
             className="input input-bordered w-full"
+            value={user?.displayName}
             placeholder="Your full name"
           />
           {errors.riderName && <span className="text-red-500">Required</span>}
         </div>
-
         <div>
           <label className="label">Email</label>
           <input
             type="email"
             {...register("email", { required: true })}
-            className="input input-bordered w-full"
+            className="input input-bordered w-full" 
+            value={user?.email}
             placeholder="Email"
           />
           {errors.email && <span className="text-red-500">Required</span>}

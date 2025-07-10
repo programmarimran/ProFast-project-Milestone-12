@@ -3,13 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { FaSpinner, FaEye, FaCheck, FaTimes } from "react-icons/fa";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { toast } from "react-toastify";
-import useAuth from "../../../hooks/useAuth";
+
 
 const PendingRiders = () => {
   const axiosSecure = useAxiosSecure();
+
   const [selectedRider, setSelectedRider] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { user } = useAuth();
 
   // 1. Fetch pending riders
   const {
@@ -52,7 +52,7 @@ const PendingRiders = () => {
         // Approve rider
         await axiosSecure.patch(`/riders/approve/${riderId}`, {
           status: "approved",
-          email: user.email,
+        
         });
         toast.success("Rider approved successfully.");
       }
