@@ -231,7 +231,7 @@ app.patch("/parcels/:id/update-status-and-earning", async (req, res) => {
 
   const updateDoc = {
     deliveryStatus: status,
-    updated_at: new Date(),
+    updated_Deliveryted_at: new Date(),
   };
 
   // ✅ যদি স্ট্যাটাস "delivered" হয়, তাহলে earningAmount বসাও
@@ -328,6 +328,51 @@ app.patch(
     });
   }
 );
+// *************************Rider Earning related api*********************
+app.get("/rider/earnings-summary", tokenFbVerify, async (req, res) => {
+  const email = req.decoded.email;
+  const now = new Date();
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const lastWeek = new Date(now.setDate(now.getDate() - 7));
+  const lastMonth = new Date(now.setMonth(now.getMonth() - 1));
+  const lastYear = new Date(now.setFullYear(now.getFullYear() - 1));
+
+  const parcels = await parcelCollection
+    .find({
+      "assignedRider.email": email,
+      deliveryStatus: "delivered",
+    })
+    .toArray();
+
+  const summary = {
+    totalEarning: 0,
+    totalCashedOut: 0,
+    pendingCashout: 0,
+    todayEarning: 0,
+    lastWeekEarning: 0,
+    lastMonthEarning: 0,
+    lastYearEarning: 0,
+  };
+
+  parcels.forEach((p) => {
+    const updatedAt = new Date(p.updated_Deliveryted_at);
+    const amount = p.earningInfo.amount || 0;
+    if (p.earningInfo?.isCashedOut) {
+      summary.totalCashedOut += amount;
+    } else {
+      summary.pendingCashout += amount;
+    }
+    summary.totalEarning += amount;
+
+    if (updatedAt >= today) summary.todayEarning += amount;
+    if (updatedAt >= lastWeek) summary.lastWeekEarning += amount;
+    if (updatedAt >= lastMonth) summary.lastMonthEarning += amount;
+    if (updatedAt >= lastYear) summary.lastYearEarning += amount;
+  });
+
+  res.json(summary);
+});
 
 //*********************************************************************** */
 // created payment intregration system related api
