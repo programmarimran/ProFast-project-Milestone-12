@@ -5,6 +5,7 @@ import {
   MdEdit,
   MdDashboard,
   MdDoneAll,
+  MdAttachMoney,
 } from "react-icons/md";
 import { NavLink, Outlet } from "react-router";
 import ProFastLogo from "../shared/proFastLogo/ProFastLogo";
@@ -206,6 +207,20 @@ const DashboardLayout = () => {
                 >
                   <MdDoneAll className="inline-block mr-1" />
                   Completed Deliveries
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/dashboard/my-earnings"
+                  className={({ isActive }) =>
+                    `${navLinkClasses} ${isActive ? activeClass : ""}`
+                  }
+                >
+                  <MdAttachMoney
+                    className="inline-block mr-2 text-green-500"
+                    size={18}
+                  />
+                  My Earnings
                 </NavLink>
               </li>
             </>

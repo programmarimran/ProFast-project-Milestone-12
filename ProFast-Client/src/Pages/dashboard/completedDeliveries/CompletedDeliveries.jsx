@@ -62,7 +62,7 @@ const CompletedDeliveries = () => {
             </tr>
           </thead>
           <tbody>
-            {completedParcels.map((parcel) => {
+            {completedParcels?.map((parcel) => {
               const isCashedOut = parcel?.earningInfo?.isCashedOut;
               const earningAmount =
                 parcel.earningAmount || parcel.earningInfo?.amount || 0;
@@ -77,7 +77,7 @@ const CompletedDeliveries = () => {
                   <td className="text-green-600 font-semibold">
                     ${earningAmount}
                   </td>
-                  <td>{format(new Date(parcel.updated_at), "PPpp")}</td>
+                  <td>{format(new Date(parcel?.updated_Deliveryted_at), "PPpp")}</td>
                   <td>
                     <button
                       onClick={() => handleCashout(parcel._id)}

@@ -22,6 +22,7 @@ import AssignParcels from "../Pages/dashboard/assignParcel/AssignParcels";
 import PendingDeliveries from "../Pages/dashboard/pendingDeliveries/PendingDeliveries";
 import RiderRoute from "./RiderRoute";
 import CompletedDeliveries from "../Pages/dashboard/completedDeliveries/CompletedDeliveries";
+import MyEarnings from "../Pages/dashboard/riderEarningPage/MyEarnings";
 
 const router = createBrowserRouter([
   {
@@ -110,6 +111,10 @@ const router = createBrowserRouter([
             <CompletedDeliveries></CompletedDeliveries>
           </RiderRoute>
         ),
+      },
+      {
+        path:"my-earnings",
+        element:<RiderRoute><MyEarnings></MyEarnings></RiderRoute>
       },
       {
         path: "assign-parcels",
