@@ -6,7 +6,9 @@ import Swal from "sweetalert2";
 import generateParcelId from "../../utilities/generateParcelId";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
+import useTrackingLogger from "../../hooks/useTrackingLogger";
 const AddParcel = () => {
+  const { logTracking } = useTrackingLogger();
   const navigate = useNavigate();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
@@ -72,7 +74,7 @@ const AddParcel = () => {
       cancelButtonText: "✏️ Edit Info",
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#ffc107",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
         const { parcel_id, creation_date } = generateParcelId();
         data.parcel_id = parcel_id;
@@ -100,7 +102,12 @@ const AddParcel = () => {
           text: "Your parcel has been added successfully.",
           icon: "success",
         });
-
+        await logTracking({
+          parcelId: parcel_id,
+          status: "Pending",
+          statusBy: user.email,
+          statusDetails: `Parcel Added  by User ${user.displayName}`,
+        });
         navigate("/dashboard/myparcels");
       }
     });

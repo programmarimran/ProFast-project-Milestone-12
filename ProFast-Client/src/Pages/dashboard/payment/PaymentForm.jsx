@@ -5,7 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../hooks/useAuth";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import useTrackingLogger from "../../../hooks/useTrackingLogger";
 const PaymentForm = ({ parcelId }) => {
+  const { logTracking } = useTrackingLogger();
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -108,7 +110,14 @@ const PaymentForm = ({ parcelId }) => {
               text: `Transaction ID: ${transactionId}`,
               icon: "success",
               confirmButtonText: "Go to My Parcels",
-            }).then(() => {
+            }).then(async () => {
+              //save the tracking collection
+              await logTracking({
+                parcelId: parcelId,
+                status: "paid",
+                statusBy: user.email,
+                statusDetails: `Parcel Cost paid successfully!`,
+              });
               // Redirect
               navigate("/dashboard/myParcels");
             });

@@ -23,6 +23,7 @@ import PendingDeliveries from "../Pages/dashboard/pendingDeliveries/PendingDeliv
 import RiderRoute from "./RiderRoute";
 import CompletedDeliveries from "../Pages/dashboard/completedDeliveries/CompletedDeliveries";
 import MyEarnings from "../Pages/dashboard/riderEarningPage/MyEarnings";
+import DashboardHome from "../Pages/dashboard/homeDashboard/DashboardHome";
 
 const router = createBrowserRouter([
   {
@@ -75,6 +76,11 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
     children: [
+      {
+      index:true,
+      Component:DashboardHome
+      }
+      ,
       {
         path: "myparcels",
         Component: MyParcels,
