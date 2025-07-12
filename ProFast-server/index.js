@@ -77,7 +77,7 @@ let parcelCollection = null;
 let paymentCollection = null;
 let usersCollection = null;
 let riderCollection = null;
-let cashoutCollection = null;
+let trackingCollection = null;
 async function run() {
   try {
     // Connect to the "sample_mflix" database and access its "movies" collection
@@ -86,7 +86,7 @@ async function run() {
     paymentCollection = database.collection("payments");
     usersCollection = database.collection("users");
     riderCollection = database.collection("riders");
-    cashoutCollection = database.collection("cashouts");
+    trackingCollection = database.collection("trackings");
 
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
@@ -126,7 +126,50 @@ app.post("/users", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-// ***********************************************************************
+// **************************Dashboard HOme page related api************
+app.get("/admin/dashboard-summary", tokenFbVerify, tokenAdmin, async (req, res) => {
+  try {
+    const totalParcels = await parcelCollection.countDocuments();
+
+    const totalPaidAmountAgg = await paymentCollection.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$amount" }
+        }
+      }
+    ]).toArray();
+    const totalPaidAmount = totalPaidAmountAgg[0]?.total || 0;
+
+    const totalActiveRiders = await riderCollection.countDocuments({ status: "active" });
+
+    const parcelStatusAgg = await parcelCollection.aggregate([
+      {
+        $group: {
+          _id: "$deliveryStatus",
+          count: { $sum: 1 }
+        }
+      }
+    ]).toArray();
+
+    const parcelStatusCount = {};
+    parcelStatusAgg.forEach(status => {
+      parcelStatusCount[status._id] = status.count;
+    });
+
+    res.json({
+      totalParcels,
+      totalPaidAmount,
+      totalActiveRiders,
+      parcelStatusCount
+    });
+  } catch (error) {
+    console.error("Admin Dashboard Summary Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// *************************parcels related api**********************************************
 // parcels related api
 app.post("/parcels", async (req, res) => {
   const data = req.body;
@@ -163,6 +206,26 @@ app.delete("/parcels/:id", async (req, res) => {
   const result = await parcelCollection.deleteOne({ _id: new ObjectId(id) });
   res.send(result);
 });
+// ***********************parcel tracking related api***************
+app.post("/tracking-logs", async (req, res) => {
+  const { parcelId, status, statusBy, statusDetails } = req.body;
+
+  if (!parcelId || !status || !statusBy || !statusDetails) {
+    return res.status(400).send({ error: "Required fields missing" });
+  }
+
+  const trackingData = {
+    parcelId,
+    status,           // Example: "assigned", "in_transit", "delivered"
+    statusBy,         // Example: "admin@gmail.com"
+    statusDetails,    // Example: "Assigned to rider1@gmail.com"
+    statusAt: new Date(),
+  };
+
+  const result = await trackingCollection.insertOne(trackingData);
+  res.send(result);
+});
+
 // *****************parcel assign related api************************
 app.get("/parcels", tokenFbVerify, tokenAdmin, async (req, res) => {
   const { deliveryStatus } = req.query;
@@ -307,24 +370,24 @@ app.patch(
       }
     );
 
-    // ✅ Step 2: Save to cashouts collection
-    const cashoutData = {
-      parcelId: parcel._id,
-      parcelCode: parcel.parcel_id,
-      riderEmail: parcel.assignedRider.email,
-      riderName: parcel.assignedRider.name || "N/A",
-      amount: earning,
-      status: "completed",
-      cashedAt: now,
-      batchId,
-    };
+    // // ✅ Step 2: Save to cashouts collection
+    // const cashoutData = {
+    //   parcelId: parcel._id,
+    //   parcelCode: parcel.parcel_id,
+    //   riderEmail: parcel.assignedRider.email,
+    //   riderName: parcel.assignedRider.name || "N/A",
+    //   amount: earning,
+    //   status: "completed",
+    //   cashedAt: now,
+    //   batchId,
+    // };
 
-    const result = await cashoutCollection.insertOne(cashoutData);
+    // const result = await cashoutCollection.insertOne(cashoutData);
 
     res.send({
       message: "✅ Single parcel cashed out",
       insertedId: result.insertedId,
-      cashoutInfo: cashoutData,
+      // cashoutInfo: cashoutData,
     });
   }
 );
